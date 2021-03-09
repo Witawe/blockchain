@@ -1,52 +1,56 @@
 contract Test
 {
-    struct Owner
+    enum RequestType{NewHome, EditHome}
+    
+    struct Ownership
     {
-        string name;
-        int pass_ser;
-        int pass_num;
-        string phone_number;
-        uint256 pass_date;
+        string homeAddress;
+        address owner;
+        uint p;
     }   
+    
+    struct Owner{
+        string name;
+        uint passSer;
+        uint passNum;
+        uint256 date;
+        string phoneNumber;
+    }
+    
     struct Home
     {
-        string Address;
-        fixed Area;
-        int Cost;
-        Owner owner;
+        string homeAddress;
+        uint area;
+        uint cost;
     }
     struct Request
     {
-        int _type;
+        RequestType requestType;
         Home home;
-        int result;
+        uint result;
+        address adr;
     }
     struct Employee
     {
         string nameEmployee;
         string position;
-        string phone_numberEmployee;
+        string phoneNumber;
     }
     
-    Home private home;
-    Owner private owner;
-    Request private request;
-    Employee private employee;
+    mapping(address => Employee) private employees;
+    mapping(address => Owner) private owners;
+    mapping(address => Request) private requests;
+    mapping(string => Home) private homes;
+    mapping(string => Ownership[]) private ownerships;
     
-    string private message;
-    
-    function Test1(string memory Message) public 
-    {
-        message = Message;
+    function AddHome(string memory _adr, uint _area, uint _cost) public {
+        Home memory h;
+        h.homeAddress = _adr;
+        h.area = _area;
+        h.cost = _cost;
+        homes[_adr] = h;
     }
-    
-    function SetMessage(string memory newMessage) public
-    {
-        message = newMessage;
-    }
-    
-    function GetMessage() public returns (string memory)
-    {
-        return message;
+    function GetHome(string memory adr) public returns (uint _area, uint _cost){
+        return (homes[adr].area, homes[adr].cost);
     }
 }
