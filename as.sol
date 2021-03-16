@@ -69,9 +69,12 @@ contract Test
         return (employees[nameEmployee].position, employees[nameEmployee].phoneNumber);
     }
     
-    function EditEmployee(string memory nameEmployee, string memory _newname, string memory _newposition, string memory _newphoneNumber) public {
-        employees[nameEmployee].nameEmployee = _newname;
-        employees[_newname].position = _newposition;
-        employees[_newname].phoneNumber = _newphoneNumber;
+    function EditEmployee(string memory nameEmployee, string memory _newposition, string memory _newphoneNumber) public {
+        employees[nameEmployee].position = _newposition;
+        employees[nameEmployee].phoneNumber = _newphoneNumber;
+    }
+    
+    function EditEmployeeName(string memory _newname, string memory phoneNumber) public {
+        employees[phoneNumber].nameEmployee = _newname;
     }
 }
