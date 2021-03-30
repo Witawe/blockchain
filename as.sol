@@ -1,5 +1,7 @@
+pragma experimental ABIEncoderV2;
+
 contract Owned {
-    address private owner;
+    address payable private owner;
     
     constructor() public {
         owner = msg.sender;
@@ -14,7 +16,7 @@ contract Owned {
     }
     
     function ChangeOwner(address newOwner) public Onlyowner {
-        owner = newOwner;
+        owner = payable(newOwner);
     }
     
     function GetOwner() public returns (address){
@@ -24,7 +26,7 @@ contract Owned {
 
 contract ROSReestr is Owned
 {
-    uint256 private prize = 1e12;
+    uint256 private price = 100 wei;
     
     enum RequestType{NewHome, EditHome}
     //enum Position{}
@@ -134,7 +136,7 @@ contract ROSReestr is Owned
         return false;
     }
     
-    function AddRequest(uint _reqType, string memory _homeAddress, uint _area, uint _cost, address _newOwner) public payable Costs(prize) returns(bool)
+    function AddRequest(uint _reqType, string memory _homeAddress, uint _area, uint _cost, address _newOwner) public payable Costs(price) returns(bool)
     {
         Home memory h;
         h.homeAddress = _homeAddress;
@@ -168,6 +170,10 @@ contract ROSReestr is Owned
     
     function NewCost(uint256 newCost) public Onlyowner
     {
-        prize = newCost;
+        price = newCost;
+    }
+    
+    function GetCost() public returns (uint nowcost){
+        return price;
     }
 }
