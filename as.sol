@@ -4,7 +4,7 @@ contract Owned {
     address payable private owner;
     
     constructor() public {
-        owner = msg.sender;
+        owner = payable(msg.sender);
     }
     
     modifier Onlyowner{
@@ -15,8 +15,8 @@ contract Owned {
         _;
     }
     
-    function ChangeOwner(address newOwner) public Onlyowner {
-        owner = payable(newOwner);
+    function ChangeOwner(address payable newOwner) public Onlyowner {
+        owner = newOwner;
     }
     
     function GetOwner() public returns (address){
@@ -74,7 +74,8 @@ contract ROSReestr is Owned
     mapping(address => Owner) private owners;
     mapping(address => Request) private requests;
     address[] requestsInitiator;
-    mapping(string => Home) private homes;
+    address[] listhome;
+    mapping(address => Home) private homes;
     mapping(string => Ownership[]) private ownerships;
     
     uint private amount;
@@ -97,16 +98,14 @@ contract ROSReestr is Owned
     }
     
     
-    function AddHome(string memory _adr, uint _area, uint _cost) public {
+    function AddHome(string memory _adr, uint _area, uint _cost) public returns (bool) {
         Home memory h;
         h.homeAddress = _adr;
         h.area = _area;
         h.cost = _cost;
-        homes[_adr] = h;
-    }
-    
-    function GetHome(string memory adr) public returns (uint _area, uint _cost) {
-        return (homes[adr].area, homes[adr].cost);
+        homes[msg.sender] = h;
+        listhome.push(msg.sender);
+        return true;
     }
     
     function AddEmployee(address empl, string memory _name, string memory _position, string memory _phoneNumber) public Onlyowner {
@@ -168,12 +167,33 @@ contract ROSReestr is Owned
         return (ids, types, homeAddress);
     }
     
+    function GetListHome() public view returns (string[] memory, uint[] memory, uint[] memory)
+    {
+        string[] memory Address = new string[](listhome.length);
+        uint[] memory costss = new uint[](listhome.length);
+        uint[] memory areas = new uint[](listhome.length);
+        for(uint i = 0; i != listhome.length; i++)
+        {
+            Address[i] = homes[listhome[i]].homeAddress;
+            costss[i] = homes[listhome[i]].cost;
+            areas[i] = homes[listhome[i]].area;
+        }
+        return (Address, costss, areas);
+    }
+    
+    function GetlistOwner() public view returns (bool)
+    {
+        
+        return true;
+    }
+    
     function NewCost(uint256 newCost) public Onlyowner
     {
         price = newCost;
     }
     
-    function GetCost() public returns (uint nowcost){
+    function GetCost() public returns (uint nowcost)
+    {
         return price;
     }
 }
