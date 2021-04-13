@@ -27,7 +27,7 @@ contract Owned {
 
 contract ROSReestr is Owned
 {
-    uint256 private price = 100 wei;
+    uint256 private price = 1;
     
     enum RequestType {NewHome, EditHome}
     //enum Position{}
@@ -207,6 +207,7 @@ contract ROSReestr is Owned
         if(r.requestType == RequestType.NewHome && homes[r.homeAddress].isset){
             delete requests[requestsInitiator[Id]];
             delete requestsInitiator[Id];
+            
             return 2;
         } 
         if(r.requestType == RequestType.NewHome){
