@@ -30,7 +30,6 @@ contract ROSReestr is Owned
     uint256 private price = 1;
     
     enum RequestType {NewHome, EditHome}
-    //enum Position{}
     enum OwnerOperation {Add, Edit, Delete}
     
     struct Ownership
@@ -84,6 +83,7 @@ contract ROSReestr is Owned
     address[] listhome;
     string[] addresses;
     mapping(string => Home) private homes;
+    mapping(address => Home) private homess;
     mapping(string => Ownership[]) private ownerships;
     
     uint private amount;
@@ -106,12 +106,14 @@ contract ROSReestr is Owned
     }
     
     
-     function AddHome(string memory _adr, uint _area, uint _cost) public {
+    function AddHome(string memory _adr, uint _area, uint _cost) public {
         Home memory h;
         h.homeAddress = _adr;
         h.area = _area;
         h.cost = _cost;
+        homess[msg.sender] = h;
         homes[_adr] = h;
+        listhome.push(msg.sender);
         addresses.push(_adr);
     }
     
@@ -140,6 +142,10 @@ contract ROSReestr is Owned
             return true;
         }
         return false;
+    }
+    
+    function GetHome(string memory adr) public returns (uint _area, uint _cost){
+        return (homes[adr].area, homes[adr].cost);
     }
     
     function AddRequest(uint rType, string memory adr, uint area, uint cost, address newOwner) public Costs(1e12) payable returns (bool)
@@ -171,19 +177,23 @@ contract ROSReestr is Owned
         return (ids, types, homeAddresses);
     }
     
-    // function GetListHome() public view returns (string[] memory, uint[] memory, uint[] memory)
-    // {
-    //     string[] memory Address = new string[](listhome.length);
-    //     uint[] memory costss = new uint[](listhome.length);
-    //     uint[] memory areas = new uint[](listhome.length);
-    //     for(uint i = 0; i != listhome.length; i++)
-    //     {
-    //         Address[i] = homes[listhome[i]].homeAddress;
-    //         costss[i] = homes[listhome[i]].cost;
-    //         areas[i] = homes[listhome[i]].area;
-    //     }
-    //     return (Address, costss, areas);
-    // }
+    function GetListHome() public view returns (string[] memory, uint[] memory, uint[] memory)
+    {
+        string[] memory Address = new string[](listhome.length);
+        uint[] memory costss = new uint[](listhome.length);
+        uint[] memory areas = new uint[](listhome.length);
+        for(uint i = 0; i != listhome.length; i++)
+        {
+            Address[i] = homess[listhome[i]].homeAddress;
+            costss[i] = homess[listhome[i]].cost;
+            areas[i] = homess[listhome[i]].area;
+        }
+        return (Address, costss, areas);
+    }
+    
+    // function EditHome_1() public view returns (){
+        
+    // } 
     
     function GetlistOwner() public view returns (bool)
     {
@@ -219,9 +229,11 @@ contract ROSReestr is Owned
             ownership.owner = requestsInitiator[Id];
             ownership.p = 1;
             ownerships[r.homeAddress].push(ownership);
-        } else {
+        } else if(r.requestType == RequestType.EditHome){
             //edit home
             //change ownership
+            //EditHome(r.homeAddress, r.area, r.cost);
+            
         }
         delete requests[requestsInitiator[Id]];
         delete requestsInitiator[Id];
